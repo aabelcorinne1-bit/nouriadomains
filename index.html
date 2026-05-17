@@ -17,10 +17,11 @@
       flex-direction: column;
     }
     .container {
-      max-width: 720px;
+      max-width: 860px;
       margin: 0 auto;
-      padding: 80px 32px;
+      padding: 80px 32px 40px;
       flex: 1;
+      width: 100%;
     }
     .badge {
       display: inline-block;
@@ -49,14 +50,83 @@
     .section {
       margin-bottom: 48px;
     }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
     h2 {
       font-size: 14px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: #737373;
-      margin-bottom: 20px;
     }
+    .count {
+      font-size: 13px;
+      color: #525252;
+      background: #171717;
+      padding: 4px 12px;
+      border-radius: 100px;
+      border: 1px solid #262626;
+    }
+
+    /* Search & Filter */
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      padding: 12px 16px;
+      background: #171717;
+      border: 1px solid #262626;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 15px;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .search-box::placeholder { color: #525252; }
+    .search-box:focus {
+      outline: none;
+      border-color: #4ade80;
+      background: #1f1f1f;
+    }
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 10px 16px;
+      background: #171717;
+      border: 1px solid #262626;
+      border-radius: 8px;
+      color: #a3a3a3;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .filter-btn:hover {
+      border-color: #404040;
+      color: #fff;
+    }
+    .filter-btn.active {
+      background: #4ade80;
+      color: #0a0a0a;
+      border-color: #4ade80;
+    }
+
+    /* Domain Grid */
     .domains {
       display: grid;
       gap: 12px;
@@ -70,21 +140,59 @@
       border: 1px solid #262626;
       border-radius: 10px;
       transition: all 0.2s ease;
+      gap: 16px;
     }
     .domain:hover {
       border-color: #404040;
       background: #1f1f1f;
     }
+    .domain-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+      flex: 1;
+    }
     .domain-name {
       font-size: 17px;
       font-weight: 500;
       color: #fff;
+      word-break: break-all;
     }
-    .domain-status {
-      font-size: 13px;
+    .domain-category {
+      font-size: 12px;
+      color: #525252;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .offer-btn {
+      padding: 8px 16px;
+      background: transparent;
       color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, 0.3);
+      border-radius: 8px;
+      font-size: 13px;
       font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      font-family: inherit;
     }
+    .offer-btn:hover {
+      background: #4ade80;
+      color: #0a0a0a;
+      border-color: #4ade80;
+    }
+    .no-results {
+      text-align: center;
+      padding: 40px;
+      color: #525252;
+      font-size: 14px;
+    }
+    .domain.hidden { display: none; }
+
+    /* Contact */
     .contact {
       padding: 28px;
       background: #171717;
@@ -97,13 +205,12 @@
     }
     .email {
       display: inline-block;
-      color: #fff;
-      font-size: 18px;
+      color: #0a0a0a;
+      font-size: 16px;
       font-weight: 500;
       text-decoration: none;
       padding: 12px 20px;
       background: #4ade80;
-      color: #0a0a0a;
       border-radius: 8px;
       transition: all 0.2s ease;
     }
@@ -111,6 +218,7 @@
       background: #22c55e;
       transform: translateY(-1px);
     }
+
     footer {
       text-align: center;
       padding: 32px;
@@ -118,10 +226,21 @@
       font-size: 14px;
       border-top: 1px solid #171717;
     }
+
+    /* Mobile */
     @media (max-width: 600px) {
-      .container { padding: 48px 24px; }
+      .container { padding: 48px 20px 24px; }
       h1 { font-size: 36px; }
-      .tagline { font-size: 18px; }
+      .tagline { font-size: 17px; }
+      .domain {
+        padding: 16px;
+        flex-wrap: wrap;
+      }
+      .domain-name { font-size: 16px; }
+      .offer-btn {
+        padding: 8px 14px;
+        font-size: 12px;
+      }
     }
   </style>
 </head>
@@ -132,23 +251,129 @@
     <p class="tagline">Premium domain broker. Acquiring and curating high-value domains for startups and tech companies.</p>
 
     <div class="section">
-      <h2>Current Portfolio</h2>
-      <div class="domains">
-        <div class="domain">
-          <span class="domain-name">cloudpolarity.com</span>
-          <span class="domain-status">Available</span>
+      <div class="section-header">
+        <h2>Current Portfolio</h2>
+        <span class="count" id="domainCount">11 domains</span>
+      </div>
+
+      <div class="controls">
+        <input
+          type="text"
+          class="search-box"
+          id="searchBox"
+          placeholder="Search domains..."
+          autocomplete="off"
+        >
+      </div>
+
+      <div class="filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="ai">AI</button>
+        <button class="filter-btn" data-filter="tech">Tech</button>
+        <button class="filter-btn" data-filter="finance">Finance</button>
+        <button class="filter-btn" data-filter="brandable">Brandable</button>
+        <button class="filter-btn" data-filter="medical">Medical</button>
+      </div>
+
+      <div class="domains" id="domainsList">
+        <div class="domain" data-name="cloudpolarity.com" data-category="tech">
+          <div class="domain-info">
+            <span class="domain-name">cloudpolarity.com</span>
+            <span class="domain-category">Tech / Cloud</span>
+          </div>
+          <a href="mailto:nour@nouriadomains.com?subject=Offer for cloudpolarity.com&body=Hi Nour,%0D%0A%0D%0AI'm interested in acquiring cloudpolarity.com.%0D%0A%0D%0AMy offer: $%0D%0A%0D%0ABest," class="offer-btn">Make an offer</a>
         </div>
-        <div class="domain">
-          <span class="domain-name">nouriadomains.com</span>
-          <span class="domain-status">Not for sale</span>
+
+        <div class="domain" data-name="nasmoney.com" data-category="finance">
+          <div class="domain-info">
+            <span class="domain-name">nasmoney.com</span>
+            <span class="domain-category">Finance</span>
+          </div>
+          <a href="mailto:nour@nouriadomains.com?subject=Offer for nasmoney.com&body=Hi Nour,%0D%0A%0D%0AI'm interested in acquiring nasmoney.com.%0D%0A%0D%0AMy offer: $%0D%0A%0D%0ABest," class="offer-btn">Make an offer</a>
+        </div>
+
+        <div class="domain" data-name="serverdevelopers.com" data-category="tech">
+          <div class="domain-info">
+            <span class="domain-name">serverdevelopers.com</span>
+            <span class="domain-category">Tech / Dev</span>
+          </div>
+          <a href="mailto:nour@nouriadomains.com?subject=Offer for serverdevelopers.com&body=Hi Nour,%0D%0A%0D%0AI'm interested in acquiring serverdevelopers.com.%0D%0A%0D%0AMy offer: $%0D%0A%0D%0ABest," class="offer-btn">Make an offer</a>
+        </div>
+
+        <div class="domain" data-name="belvra.com" data-category="brandable">
+          <div class="domain-info">
+            <span class="domain-name">belvra.com</span>
+            <span class="domain-category">Brandable</span>
+          </div>
+          <a href="mailto:nour@nouriadomains.com?subject=Offer for belvra.com&body=Hi Nour,%0D%0A%0D%0AI'm interested in acquiring belvra.com.%0D%0A%0D%0AMy offer: $%0D%0A%0D%0ABest," class="offer-btn">Make an offer</a>
+        </div>
+
+        <div class="domain" data-name="casparai.com" data-category="ai">
+          <div class="domain-info">
+            <span class="domain-name">casparai.com</span>
+            <span class="domain-category">AI</span>
+          </div>
+          <a href="mailto:nour@nouriadomains.com?subject=Offer for casparai.com&body=Hi Nour,%0D%0A%0D%0AI'm interested in acquiring casparai.com.%0D%0A%0D%0AMy offer: $%0D%0A%0D%0ABest," class="offer-btn">Make an offer</a>
+        </div>
+
+        <div class="domain" data-name="solarui.com" data-category="tech">
+          <div class="domain-info">
+            <span class="domain-name">solarui.com</span>
+            <span class="domain-category">Tech / UI</span>
+          </div>
+          <a href="mailto:nour@nouriadomains.com?subject=Offer for solarui.com&body=Hi Nour,%0D%0A%0D%0AI'm interested in acquiring solarui.com.%0D%0A%0D%0AMy offer: $%0D%0A%0D%0ABest," class="offer-btn">Make an offer</a>
+        </div>
+
+        <div class="domain" data-name="thyroidea.com" data-category="medical">
+          <div class="domain-info">
+            <span class="domain-name">thyroidea.com</span>
+            <span class="domain-category">Medical</span>
+          </div>
+          <a href="mailto:nour@nouriadomains.com?subject=Offer for thyroidea.com&body=Hi Nour,%0D%0A%0D%0AI'm interested in acquiring thyroidea.com.%0D%0A%0D%0AMy offer: $%0D%0A%0D%0ABest," class="offer-btn">Make an offer</a>
+        </div>
+
+        <div class="domain" data-name="aibehold.com" data-category="ai">
+          <div class="domain-info">
+            <span class="domain-name">aibehold.com</span>
+            <span class="domain-category">AI</span>
+          </div>
+          <a href="mailto:nour@nouriadomains.com?subject=Offer for aibehold.com&body=Hi Nour,%0D%0A%0D%0AI'm interested in acquiring aibehold.com.%0D%0A%0D%0AMy offer: $%0D%0A%0D%0ABest," class="offer-btn">Make an offer</a>
+        </div>
+
+        <div class="domain" data-name="coloneo.com" data-category="brandable">
+          <div class="domain-info">
+            <span class="domain-name">coloneo.com</span>
+            <span class="domain-category">Brandable</span>
+          </div>
+          <a href="mailto:nour@nouriadomains.com?subject=Offer for coloneo.com&body=Hi Nour,%0D%0A%0D%0AI'm interested in acquiring coloneo.com.%0D%0A%0D%0AMy offer: $%0D%0A%0D%0ABest," class="offer-btn">Make an offer</a>
+        </div>
+
+        <div class="domain" data-name="knolabs.com" data-category="tech">
+          <div class="domain-info">
+            <span class="domain-name">knolabs.com</span>
+            <span class="domain-category">Tech / Labs</span>
+          </div>
+          <a href="mailto:nour@nouriadomains.com?subject=Offer for knolabs.com&body=Hi Nour,%0D%0A%0D%0AI'm interested in acquiring knolabs.com.%0D%0A%0D%0AMy offer: $%0D%0A%0D%0ABest," class="offer-btn">Make an offer</a>
+        </div>
+
+        <div class="domain" data-name="mixts.com" data-category="brandable">
+          <div class="domain-info">
+            <span class="domain-name">mixts.com</span>
+            <span class="domain-category">Brandable / Short</span>
+          </div>
+          <a href="mailto:nour@nouriadomains.com?subject=Offer for mixts.com&body=Hi Nour,%0D%0A%0D%0AI'm interested in acquiring mixts.com.%0D%0A%0D%0AMy offer: $%0D%0A%0D%0ABest," class="offer-btn">Make an offer</a>
+        </div>
+
+        <div class="no-results" id="noResults" style="display:none;">
+          No domains found matching your search.
         </div>
       </div>
     </div>
 
     <div class="section">
-      <h2>Get in touch</h2>
+      <h2 style="margin-bottom: 20px;">Get in touch</h2>
       <div class="contact">
-        <p>Interested in acquiring a domain or have an inquiry? Reach out directly.</p>
+        <p>Interested in acquiring a domain, bulk inquiry, or have a question? Reach out directly.</p>
         <a href="mailto:nour@nouriadomains.com" class="email">nour@nouriadomains.com</a>
       </div>
     </div>
@@ -157,5 +382,47 @@
   <footer>
     © 2026 Nouria Domains. All rights reserved.
   </footer>
+
+  <script>
+    const searchBox = document.getElementById('searchBox');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const domains = document.querySelectorAll('.domain');
+    const noResults = document.getElementById('noResults');
+    const domainCount = document.getElementById('domainCount');
+    let activeFilter = 'all';
+
+    function updateDomains() {
+      const searchTerm = searchBox.value.toLowerCase().trim();
+      let visibleCount = 0;
+
+      domains.forEach(domain => {
+        const name = domain.dataset.name.toLowerCase();
+        const category = domain.dataset.category;
+        const matchesSearch = name.includes(searchTerm);
+        const matchesFilter = activeFilter === 'all' || category === activeFilter;
+
+        if (matchesSearch && matchesFilter) {
+          domain.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          domain.classList.add('hidden');
+        }
+      });
+
+      noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+      domainCount.textContent = visibleCount + ' domain' + (visibleCount !== 1 ? 's' : '');
+    }
+
+    searchBox.addEventListener('input', updateDomains);
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeFilter = btn.dataset.filter;
+        updateDomains();
+      });
+    });
+  </script>
 </body>
 </html>
